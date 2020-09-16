@@ -76,6 +76,17 @@ namespace SteamKit2
             set => ProtoHeader.jobid_target = value ?? throw new ArgumentNullException( nameof(value) );
         }
         /// <summary>
+        /// Gets or sets the target job name for this client message.
+        /// </summary>
+        /// <value>
+        /// The target job name.
+        /// </value>
+        public string TargetJobName
+        {
+            get => ProtoHeader.target_job_name;
+            set => ProtoHeader.target_job_name = value ?? throw new ArgumentNullException( nameof( value ) );
+        }
+        /// <summary>
         /// Gets or sets the source job id for this client message.
         /// </summary>
         /// <value>
@@ -118,10 +129,18 @@ namespace SteamKit2
         /// <summary>
         /// Serializes this client message instance to a byte array.
         /// </summary>
-        /// <exception cref="NotSupportedException">This class is for reading Protobuf messages only. If you want to create a protobuf message, use <see cref="ClientMsgProtobuf&lt;T&gt;"/>.</exception>
+        /// <returns>
+        /// Data representing a client message.
+        /// </returns>
         public override byte[] Serialize()
         {
-            throw new NotSupportedException( "ClientMsgProtobuf is for reading only. Use ClientMsgProtobuf<T> for serializing messages." );
+            using ( MemoryStream ms = new MemoryStream() )
+            {
+                Header.Serialize( ms );
+                Payload.WriteTo( ms );
+
+                return ms.ToArray();
+            }
         }
 
         /// <summary>
